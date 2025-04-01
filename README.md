@@ -14,7 +14,7 @@ This tool is designed for ease-of-use, mod compatibility, and safety — no back
 - ✅ Automatically renames conflicting `.vpk` files to avoid overwrites
 - ✅ Detects and modifies the required section in `gameinfo.gi`
 - ✅ Automatically locates your Deadlock installation via Steam (if available)
-- ✅ Clean, modern GUI using PyQt6
+- ✅ GUI using PyQt6
 - ✅ No installer required (portable `.exe`)
 - ✅ Source code available and fully auditable
 
