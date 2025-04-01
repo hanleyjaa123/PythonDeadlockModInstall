@@ -10,7 +10,6 @@ This tool is designed for ease-of-use, mod compatibility, and safety — no back
 
 ## 🔧 Features
 
-- ✅ Drag-and-drop ZIP mod installation
 - ✅ Automatically extracts `.vpk` files to the correct Deadlock `addons` directory
 - ✅ Automatically renames conflicting `.vpk` files to avoid overwrites
 - ✅ Detects and modifies the required section in `gameinfo.gi`
