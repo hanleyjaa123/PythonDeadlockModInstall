@@ -151,6 +151,21 @@ def get_steam_path() -> str | None:
     except Exception:
         return None
 
+
+def check_duplicate_mods(mod_name: str, deadlock_root: str) -> bool:
+    addons_dir = os.path.join(deadlock_root, "game", "citadel", "addons")
+    mods_meta_path = os.path.join(addons_dir, "installed_mods.json")
+  
+    if not os.path.exists(mods_meta_path):
+        return False #no mods are installed yet
+
+    try:
+        with open(mods_meta_path, "r", encoding="utf-8") as f:
+            mods_meta = json.load(f)
+        return mod_name in mods_meta
+    except Exception:
+        return False #On error, assume not installed
+
 def get_steam_libraries(steam_path: str) -> list[str]:
     libraries = [os.path.join(steam_path)]
     vdf_path = os.path.join(steam_path, "steamapps", "libraryfolders.vdf")
