@@ -82,7 +82,7 @@ class DeadlockModInstaller(QWidget):
             QTimer.singleShot(600, lambda: self.progress_bar.setValue(75))
 
             def finish_install():
-                # 🔁 Pass confirm_overwrite function as callback to backend logic
+                #  Pass confirm_overwrite function as callback to backend logic
                 success, message = install_mod_zip(zip_path, self.game_path, self.confirm_overwrite)
                 self.progress_bar.setValue(100)
                 if success:
