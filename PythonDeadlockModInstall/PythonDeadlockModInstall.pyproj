@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{20def53b-9929-41fd-a5c0-2f06c789f838}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>PythonDeadlockModInstall.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId>Global|PythonCore|3.12</InterpreterId>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="mod_installer.py" />
+    <Compile Include="PythonDeadlockModInstall.build\scons-debug.py" />
+    <Compile Include="PythonDeadlockModInstall.onefile-build\scons-debug.py" />
+    <Compile Include="PythonDeadlockModInstall.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="PythonDeadlockModInstall.build\clcache-stats.29760.txt" />
+    <Content Include="PythonDeadlockModInstall.build\scons-report.txt" />
+    <Content Include="PythonDeadlockModInstall.build\__constants.txt" />
+    <Content Include="PythonDeadlockModInstall.onefile-build\clcache-stats.23404.txt" />
+    <Content Include="PythonDeadlockModInstall.onefile-build\scons-report.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="PythonDeadlockModInstall.build" />
+    <Folder Include="PythonDeadlockModInstall.onefile-build" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="Global|PythonCore|3.12" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+</Project>
