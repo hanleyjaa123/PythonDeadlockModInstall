@@ -55,6 +55,18 @@ class DeadlockModInstaller(QWidget):
             self.mod_btn.setEnabled(True)
             self.refresh_mod_list()
 
+    def confirm_overwrite(self, mod_name: str) -> bool:
+        """
+        Show a prompt asking the user if they want to overwrite an existing mod.
+        """
+        confirm = QMessageBox.question(
+            self,
+            "Overwrite Mod?",
+            f"The mod '{mod_name}' is already installed. Do you want to overwrite it?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+        return confirm == QMessageBox.StandardButton.Yes
+
     def install_mod(self):
         zip_path, _ = QFileDialog.getOpenFileName(self, "Select Mod ZIP", "", "ZIP Files (*.zip)")
         if zip_path and self.game_path:
@@ -67,7 +79,8 @@ class DeadlockModInstaller(QWidget):
             QTimer.singleShot(600, lambda: self.progress_bar.setValue(75))
 
             def finish_install():
-                success, message = install_mod_zip(zip_path, self.game_path)
+                # 🔁 Pass confirm_overwrite function as callback to backend logic
+                success, message = install_mod_zip(zip_path, self.game_path, self.confirm_overwrite)
                 self.progress_bar.setValue(100)
                 if success:
                     QMessageBox.information(self, "Success", message)

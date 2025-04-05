@@ -1,10 +1,10 @@
-import os
+﻿import os
 import zipfile
 import shutil
 import winreg
 import json
 
-def install_mod_zip(zip_path: str, deadlock_root: str) -> tuple[bool, str]:
+def install_mod_zip(zip_path: str, deadlock_root: str, confirm_overwrite_callback=None) -> tuple[bool, str]:
     """
     Installs a Deadlock mod from a ZIP containing a .vpk file.
     Extracts to the addons folder and updates gameinfo.gi if needed.
@@ -28,6 +28,23 @@ def install_mod_zip(zip_path: str, deadlock_root: str) -> tuple[bool, str]:
             mod_name = os.path.splitext(os.path.basename(zip_path))[0]
             installed_files = []
 
+            # Load existing metadata if available
+            mods_meta = {}
+            if os.path.exists(mods_meta_path):
+                with open(mods_meta_path, "r", encoding="utf-8") as f:
+                    mods_meta = json.load(f)
+
+            if mod_name in mods_meta:
+                #  Prompt logic: check for existing mod and call external UI confirm callback
+                if confirm_overwrite_callback:
+                    if not confirm_overwrite_callback(mod_name):
+                        return False, f"Mod '{mod_name}' is already installed and was not overwritten."
+                #  If confirmed, remove old files before proceeding
+                for old_file in mods_meta[mod_name]:
+                    old_path = os.path.join(addons_dir, old_file)
+                    if os.path.exists(old_path):
+                        os.remove(old_path)
+
             for vpk_name in vpk_files:
                 base_name = os.path.basename(vpk_name)
                 name, ext = os.path.splitext(base_name)
@@ -47,11 +64,6 @@ def install_mod_zip(zip_path: str, deadlock_root: str) -> tuple[bool, str]:
                 installed_files.append(new_name)
 
             # Save mod metadata
-            mods_meta = {}
-            if os.path.exists(mods_meta_path):
-                with open(mods_meta_path, "r", encoding="utf-8") as f:
-                    mods_meta = json.load(f)
-
             mods_meta[mod_name] = installed_files
 
             with open(mods_meta_path, "w", encoding="utf-8") as f:
@@ -151,11 +163,10 @@ def get_steam_path() -> str | None:
     except Exception:
         return None
 
-
 def check_duplicate_mods(mod_name: str, deadlock_root: str) -> bool:
     addons_dir = os.path.join(deadlock_root, "game", "citadel", "addons")
     mods_meta_path = os.path.join(addons_dir, "installed_mods.json")
-  
+
     if not os.path.exists(mods_meta_path):
         return False #no mods are installed yet
 
