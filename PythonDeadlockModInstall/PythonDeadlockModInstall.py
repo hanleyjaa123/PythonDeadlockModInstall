@@ -1,16 +1,18 @@
 ﻿import sys
+import os
+import json
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QLabel, QPushButton,
-    QVBoxLayout, QFileDialog, QMessageBox, QProgressBar
+    QVBoxLayout, QFileDialog, QMessageBox, QProgressBar, QScrollArea, QHBoxLayout, QListWidget, QListWidgetItem
 )
 from PyQt6.QtCore import Qt, QTimer
-from mod_installer import install_mod_zip, find_deadlock_install_path
+from mod_installer import install_mod_zip, remove_mod, find_deadlock_install_path
 
 class DeadlockModInstaller(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Deadlock Visual Mod Installer")
-        self.setFixedSize(400, 270)
+        self.setFixedSize(500, 500)
 
         self.layout = QVBoxLayout()
 
@@ -32,15 +34,18 @@ class DeadlockModInstaller(QWidget):
         self.progress_bar.setVisible(False)
         self.layout.addWidget(self.progress_bar)
 
+        self.mods_list = QListWidget()
+        self.layout.addWidget(self.mods_list)
+
         self.setLayout(self.layout)
         self.game_path = ""
 
-        # Try auto-detect Deadlock installation
         auto_path = find_deadlock_install_path()
         if auto_path:
             self.game_path = auto_path
             self.label.setText(f"✅ Auto-detected game folder:\n{auto_path}")
             self.mod_btn.setEnabled(True)
+            self.refresh_mod_list()
 
     def select_game_folder(self):
         folder = QFileDialog.getExistingDirectory(self, "Select Deadlock Install Folder")
@@ -48,6 +53,7 @@ class DeadlockModInstaller(QWidget):
             self.game_path = folder
             self.label.setText(f"Selected folder: {folder}")
             self.mod_btn.setEnabled(True)
+            self.refresh_mod_list()
 
     def install_mod(self):
         zip_path, _ = QFileDialog.getOpenFileName(self, "Select Mod ZIP", "", "ZIP Files (*.zip)")
@@ -66,6 +72,7 @@ class DeadlockModInstaller(QWidget):
                 if success:
                     QMessageBox.information(self, "Success", message)
                     self.label.setText("✅ Mod installed successfully.")
+                    self.refresh_mod_list()
                 else:
                     QMessageBox.critical(self, "Error", message)
                     self.label.setText("❌ Installation failed.")
@@ -74,6 +81,37 @@ class DeadlockModInstaller(QWidget):
             QTimer.singleShot(800, finish_install)
         else:
             QMessageBox.warning(self, "Warning", "You must select a folder and a ZIP file.")
+
+    def refresh_mod_list(self):
+        self.mods_list.clear()
+        mods_meta_path = os.path.join(self.game_path, "game", "citadel", "addons", "installed_mods.json")
+        if os.path.exists(mods_meta_path):
+            with open(mods_meta_path, "r", encoding="utf-8") as f:
+                mods = json.load(f)
+            for mod_name in mods:
+                item = QListWidgetItem()
+                widget = QWidget()
+                layout = QHBoxLayout()
+                label = QLabel(mod_name)
+                remove_btn = QPushButton("Remove")
+                remove_btn.clicked.connect(lambda checked, name=mod_name: self.remove_mod(name))
+                layout.addWidget(label)
+                layout.addWidget(remove_btn)
+                layout.setContentsMargins(0, 0, 0, 0)
+                widget.setLayout(layout)
+                item.setSizeHint(widget.sizeHint())
+                self.mods_list.addItem(item)
+                self.mods_list.setItemWidget(item, widget)
+
+    def remove_mod(self, mod_name):
+        confirm = QMessageBox.question(self, "Confirm Removal", f"Are you sure you want to remove '{mod_name}'?", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        if confirm == QMessageBox.StandardButton.Yes:
+            success, message = remove_mod(mod_name, self.game_path)
+            if success:
+                QMessageBox.information(self, "Removed", message)
+                self.refresh_mod_list()
+            else:
+                QMessageBox.critical(self, "Error", message)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
