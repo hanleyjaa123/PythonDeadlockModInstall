@@ -2,15 +2,18 @@ import os
 import zipfile
 import shutil
 import winreg
+import json
 
 def install_mod_zip(zip_path: str, deadlock_root: str) -> tuple[bool, str]:
     """
     Installs a Deadlock mod from a ZIP containing a .vpk file.
     Extracts to the addons folder and updates gameinfo.gi if needed.
+    Saves metadata to allow for mod removal later.
     """
     citadel_dir = os.path.join(deadlock_root, "game", "citadel")
     addons_dir = os.path.join(citadel_dir, "addons")
     gameinfo_path = os.path.join(citadel_dir, "gameinfo.gi")
+    mods_meta_path = os.path.join(addons_dir, "installed_mods.json")
 
     if not os.path.exists(addons_dir):
         os.makedirs(addons_dir)
@@ -21,6 +24,9 @@ def install_mod_zip(zip_path: str, deadlock_root: str) -> tuple[bool, str]:
 
             if not vpk_files:
                 return False, "No .vpk file found in the ZIP."
+
+            mod_name = os.path.splitext(os.path.basename(zip_path))[0]
+            installed_files = []
 
             for vpk_name in vpk_files:
                 base_name = os.path.basename(vpk_name)
@@ -35,19 +41,31 @@ def install_mod_zip(zip_path: str, deadlock_root: str) -> tuple[bool, str]:
                     if count > 99:
                         return False, "Too many conflicting .vpk files. Rename manually."
 
-                # Extract the .vpk to the addons folder
-                with zip_ref.open(vpk_name) as src, open(os.path.join(addons_dir, new_name), "wb") as dst:
+                dest_path = os.path.join(addons_dir, new_name)
+                with zip_ref.open(vpk_name) as src, open(dest_path, "wb") as dst:
                     shutil.copyfileobj(src, dst)
+                installed_files.append(new_name)
+
+            # Save mod metadata
+            mods_meta = {}
+            if os.path.exists(mods_meta_path):
+                with open(mods_meta_path, "r", encoding="utf-8") as f:
+                    mods_meta = json.load(f)
+
+            mods_meta[mod_name] = installed_files
+
+            with open(mods_meta_path, "w", encoding="utf-8") as f:
+                json.dump(mods_meta, f, indent=2)
 
         # Update gameinfo.gi if needed
         required_block = """\
-\t\t\t\t{
-\t\t\t\t\tMod citadel
-\t\t\t\t\tWrite citadel
-\t\t\t\t\tGame citadel/addons
-\t\t\t\t\tGame citadel
-\t\t\t\t\tGame core
-\t\t\t\t}
+                {
+                    Mod citadel
+                    Write citadel
+                    Game citadel/addons
+                    Game citadel
+                    Game core
+                }
 """
         if os.path.exists(gameinfo_path):
             with open(gameinfo_path, "r", encoding="utf-8") as f:
@@ -67,9 +85,43 @@ def install_mod_zip(zip_path: str, deadlock_root: str) -> tuple[bool, str]:
     except Exception as e:
         return False, f"Installation error: {str(e)}"
 
+def remove_mod(mod_name: str, deadlock_root: str) -> tuple[bool, str]:
+    """
+    Removes mod files based on the metadata associated with the original ZIP name.
+    """
+    citadel_dir = os.path.join(deadlock_root, "game", "citadel")
+    addons_dir = os.path.join(citadel_dir, "addons")
+    mods_meta_path = os.path.join(addons_dir, "installed_mods.json")
+
+    if not os.path.exists(mods_meta_path):
+        return False, "No mod metadata found. Cannot remove mod."
+
+    try:
+        with open(mods_meta_path, "r", encoding="utf-8") as f:
+            mods_meta = json.load(f)
+
+        if mod_name not in mods_meta:
+            return False, f"Mod '{mod_name}' not found in metadata."
+
+        files_to_remove = mods_meta[mod_name]
+        for filename in files_to_remove:
+            path = os.path.join(addons_dir, filename)
+            if os.path.exists(path):
+                os.remove(path)
+
+        del mods_meta[mod_name]
+
+        with open(mods_meta_path, "w", encoding="utf-8") as f:
+            json.dump(mods_meta, f, indent=2)
+
+        return True, f"Mod '{mod_name}' removed successfully."
+
+    except Exception as e:
+        return False, f"Removal error: {str(e)}"
+
 def replace_search_paths(content: str, replacement_block: str) -> str:
     import re
-    pattern = r"(SearchPaths\s*{.*?})"
+    pattern = r"(SearchPaths\\s*{.*?})"
     new_content, count = re.subn(pattern, f"SearchPaths {replacement_block}", content, flags=re.DOTALL)
     if count == 0:
         new_content += f"\nSearchPaths {replacement_block}"
@@ -93,7 +145,7 @@ def find_deadlock_install_path() -> str | None:
 
 def get_steam_path() -> str | None:
     try:
-        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Valve\Steam") as key:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\\Valve\\Steam") as key:
             value, _ = winreg.QueryValueEx(key, "SteamPath")
             return os.path.normpath(value)
     except Exception:
