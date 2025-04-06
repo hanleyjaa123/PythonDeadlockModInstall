@@ -40,6 +40,11 @@ class DeadlockModInstaller(QWidget):
         self.mods_list = QListWidget()
         self.layout.addWidget(self.mods_list)
 
+        self.link_label = QLabel("<a href='https://gamebanana.com/games/20948'> Find Mods here</a>")
+        self.link_label.setOpenExternalLinks(True)
+        self.link_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.layout.addWidget(self.link_label)
+
         self.setLayout(self.layout)
         self.game_path = ""
 
