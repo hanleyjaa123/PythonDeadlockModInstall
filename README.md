@@ -46,7 +46,7 @@ This tool is designed for ease-of-use, mod compatibility, and safety — no back
 > ⚠️ **Note:** The standalone `.exe` may trigger antivirus false positives because it's unsigned and created with PyInstaller.  
 > You can verify it's safe by reviewing or running the source code directly.
 ```bash
-git clone https://github.com/Hanleyjaa123/deadlock-mod-installer.git
+git clone https://github.com/Hanleyjaa123/PythonDeadlockModInstall.git
 cd deadlock-mod-installer
 pip install -r requirements.txt
 python PythonDeadlockModInstall.py
