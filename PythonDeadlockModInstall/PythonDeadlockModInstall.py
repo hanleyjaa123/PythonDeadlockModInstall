@@ -1,21 +1,26 @@
 ﻿import sys
 import os
 import json
+import webbrowser
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QLabel, QPushButton,
-    QVBoxLayout, QFileDialog, QMessageBox, QProgressBar, QScrollArea, QHBoxLayout, QListWidget, QListWidgetItem
+    QVBoxLayout, QFileDialog, QMessageBox, QProgressBar, QScrollArea, QHBoxLayout, QListWidget, QListWidgetItem, QLineEdit
 )
 from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtGui import QIcon, QCursor
 from mod_installer import install_mod_zip, remove_mod, find_deadlock_install_path
-from PyQt6.QtGui import QIcon
+from gamebanana_downloader import download_zip_from_gamebanana
 
-
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 class DeadlockModInstaller(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Deadlock Visual Mod Installer")
-        self.setFixedSize(500, 500)
+        self.setFixedSize(500, 580)
 
         self.layout = QVBoxLayout()
 
@@ -32,6 +37,15 @@ class DeadlockModInstaller(QWidget):
         self.mod_btn.setEnabled(False)
         self.layout.addWidget(self.mod_btn)
 
+        self.url_input = QLineEdit()
+        self.url_input.setPlaceholderText("Paste GameBanana Mod URL here...")
+        self.layout.addWidget(self.url_input)
+
+        self.url_btn = QPushButton("Install Mod from URL")
+        self.url_btn.clicked.connect(self.install_mod_from_url)
+        self.url_btn.setEnabled(False)
+        self.layout.addWidget(self.url_btn)
+
         self.progress_bar = QProgressBar()
         self.progress_bar.setValue(0)
         self.progress_bar.setVisible(False)
@@ -40,7 +54,7 @@ class DeadlockModInstaller(QWidget):
         self.mods_list = QListWidget()
         self.layout.addWidget(self.mods_list)
 
-        self.link_label = QLabel("<a href='https://gamebanana.com/games/20948'> Find Mods here</a>")
+        self.link_label = QLabel("<a href='https://gamebanana.com/games/13937'>🔗 Find more mods here</a>")
         self.link_label.setOpenExternalLinks(True)
         self.link_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.layout.addWidget(self.link_label)
@@ -53,6 +67,7 @@ class DeadlockModInstaller(QWidget):
             self.game_path = auto_path
             self.label.setText(f"✅ Auto-detected game folder:\n{auto_path}")
             self.mod_btn.setEnabled(True)
+            self.url_btn.setEnabled(True)
             self.refresh_mod_list()
 
     def select_game_folder(self):
@@ -61,12 +76,10 @@ class DeadlockModInstaller(QWidget):
             self.game_path = folder
             self.label.setText(f"Selected folder: {folder}")
             self.mod_btn.setEnabled(True)
+            self.url_btn.setEnabled(True)
             self.refresh_mod_list()
 
     def confirm_overwrite(self, mod_name: str) -> bool:
-        """
-        Show a prompt asking the user if they want to overwrite an existing mod.
-        """
         confirm = QMessageBox.question(
             self,
             "Overwrite Mod?",
@@ -87,7 +100,6 @@ class DeadlockModInstaller(QWidget):
             QTimer.singleShot(600, lambda: self.progress_bar.setValue(75))
 
             def finish_install():
-                #  Pass confirm_overwrite function as callback to backend logic
                 success, message = install_mod_zip(zip_path, self.game_path, self.confirm_overwrite)
                 self.progress_bar.setValue(100)
                 if success:
@@ -102,6 +114,38 @@ class DeadlockModInstaller(QWidget):
             QTimer.singleShot(800, finish_install)
         else:
             QMessageBox.warning(self, "Warning", "You must select a folder and a ZIP file.")
+
+    def install_mod_from_url(self):
+        url = self.url_input.text().strip()
+        if not url:
+            QMessageBox.warning(self, "Warning", "Please enter a valid GameBanana mod URL.")
+            return
+
+        self.progress_bar.setVisible(True)
+        self.progress_bar.setValue(0)
+        self.label.setText("Downloading mod from URL...")
+
+        QTimer.singleShot(200, lambda: self.progress_bar.setValue(25))
+        QTimer.singleShot(400, lambda: self.progress_bar.setValue(50))
+        QTimer.singleShot(600, lambda: self.progress_bar.setValue(75))
+
+        def finish_download():
+            zip_path = download_zip_from_gamebanana(url, "temp_mods")
+            if zip_path:
+                success, message = install_mod_zip(zip_path, self.game_path, self.confirm_overwrite)
+                self.progress_bar.setValue(100)
+                if success:
+                    QMessageBox.information(self, "Success", message)
+                    self.label.setText("✅ Mod installed successfully from URL.")
+                    self.refresh_mod_list()
+                else:
+                    QMessageBox.critical(self, "Error", message)
+                    self.label.setText("❌ Installation failed.")
+            else:
+                QMessageBox.critical(self, "Error", "Failed to download mod from URL.")
+            self.progress_bar.setVisible(False)
+
+        QTimer.singleShot(800, finish_download)
 
     def refresh_mod_list(self):
         self.mods_list.clear()
@@ -133,12 +177,6 @@ class DeadlockModInstaller(QWidget):
                 self.refresh_mod_list()
             else:
                 QMessageBox.critical(self, "Error", message)
-
-def resource_path(relative_path):
-    """Get the absolute path to resource for dev or PyInstaller .exe"""
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, relative_path)
-    return os.path.join(os.path.abspath("."), relative_path)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
