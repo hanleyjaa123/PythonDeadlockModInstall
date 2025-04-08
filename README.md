@@ -1,56 +1,78 @@
 # Deadlock Visual Mod Installer
 
-**A simple, open-source visual mod installer for Deadlock (by Valve).**
+[DOWNLOAD HERE](https://hanleyjaa.itch.io/deadlock-mod-installer)
 
-Deadlock Visual Mod Installer is a lightweight Windows utility that allows players to easily install `.vpk`-based visual mods into the Deadlock game without needing to manually copy files or edit system directories.
+A lightweight desktop tool for easily installing and managing visual mods for the game **Deadlock**.
 
-This tool is designed for ease-of-use, mod compatibility, and safety — no background processes, no internet access, and fully open source.
+Built with Python and PyQt6, this app allows users to:
 
----
-
-## 🔧 Features
-
-- ✅ Automatically extracts `.vpk` files to the correct Deadlock `addons` directory
-- ✅ Automatically renames conflicting `.vpk` files to avoid overwrites
-- ✅ Detects and modifies the required section in `gameinfo.gi`
-- ✅ Automatically locates your Deadlock installation via Steam (if available)
-- ✅ GUI using PyQt6
-- ✅ No installer required (portable `.exe`)
-- ✅ Source code available and fully auditable
+- ✅ Automatically detect your Deadlock install folder  
+- 📦 Install visual mod `.zip` files containing `.vpk` packages  
+- 🌐 Download mods directly from [GameBanana](https://gamebanana.com/games/13937) using a URL  
+- 🧹 Remove installed mods with one click  
+- 🔄 Automatically update `gameinfo.gi` to activate your mods  
+- 🧠 Detect and prompt before overwriting existing mods  
+- 🗂️ Track installed mods with `installed_mods.json`  
 
 ---
 
-## 📥 Installation
+## 🚀 Features
 
-### 🔒 Download
+- **Auto Detection** – Detects Deadlock installation path from Steam  
+- **GameBanana URL Support** – Paste a mod URL, auto-download and install the `.zip`  
+- **Mod Overwrite Warning** – Prompts user before overwriting existing mods  
+- **Installed Mods List** – Displays currently installed mods with remove buttons  
+- **Installed Mods Tracker** – Saves mod list to `installed_mods.json`  
+- **Clean PyQt6 Interface** – Simple, responsive GUI with progress bar  
+- **GameBanana Hyperlink** – Easily jump to mod downloads
 
-- You can download the latest **portable `.exe`** from the [Releases](https://github.com/Hanleyjaa123/deadlock-mod-installer/releases) tab.
-- Or, clone the source and run it yourself:
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-### 🎮 How to Use
+---
 
-1. **Launch the app.**
+## 📁 How to Use
 
-2. The installer will **automatically try to detect your Deadlock install folder** via Steam.  
-   - If it's **not found**, click **`Select Game Folder`** and choose it manually.
+### 1. Run the App
 
-3. Click **`Install Mod ZIP`** and select a `.zip` file containing your `.vpk` mod.
+2. Select Your Game Folder
+Automatically detects your Deadlock install via Steam
 
-4. The tool will handle the rest:
-   - 📦 Extract the `.vpk` to: `Deadlock\game\citadel\addons\`
-   - 🔁 Automatically rename the file if there's a conflict
-   - 🛠 Patch `gameinfo.gi` to include the mod folder (if not already patched)
+Or select the game directory manually
 
-5. ✅ Launch Deadlock and enjoy your mod!
+3. Install Mods
+📂 Install Mod ZIP – Choose a .zip containing a .vpk
+                     OR:
+🌐 Install Mod from URL – Paste a GameBanana URL and auto-install
 
-> ⚠️ **Note:** The standalone `.exe` may trigger antivirus false positives because it's unsigned and created with PyInstaller.  
-> You can verify it's safe by reviewing or running the source code directly.
-```bash
-git clone https://github.com/Hanleyjaa123/PythonDeadlockModInstall.git
-cd deadlock-mod-installer
-pip install -r requirements.txt
-python PythonDeadlockModInstall.py
+4. Remove Mods
+Installed mods show up in a list with Remove buttons
+
+Mods are tracked via installed_mods.json
+
+Confirms before removing
+
+🧠 App Structure
 ```
+PythonDeadlockModInstall/
+├── PythonDeadlockModInstall.py     # Main PyQt GUI
+├── mod_installer.py                # VPK handling, install/remove logic
+├── gamebanana_downloader.py       # GameBanana API + ZIP downloader
+├── icon.ico                        # App icon
+├── temp_mods/                      # Temporary downloads
+├── README.md                       # This file
+└── .gitignore                      # Build + temp file exclusions
 
+```
+📦 Dependencies
+Python 3.10 or newer
 
+ - PyQt6
 
+ - requests
+
+Install them with:
+
+```
+pip install PyQt6 requests
+```
+💬 Feedback & Contributions
+Pull requests and feedback are welcome!
+Feel free to open an issue or fork the repo to contribute.
