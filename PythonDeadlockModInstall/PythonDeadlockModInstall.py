@@ -20,7 +20,7 @@ class DeadlockModInstaller(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Deadlock Visual Mod Installer")
-        self.setFixedSize(500, 580)
+        self.setFixedSize(500, 540)
 
         self.layout = QVBoxLayout()
 
@@ -37,15 +37,6 @@ class DeadlockModInstaller(QWidget):
         self.mod_btn.setEnabled(False)
         self.layout.addWidget(self.mod_btn)
 
-        self.url_input = QLineEdit()
-        self.url_input.setPlaceholderText("Paste GameBanana Mod URL here...")
-        self.layout.addWidget(self.url_input)
-
-        self.url_btn = QPushButton("Install Mod from URL")
-        self.url_btn.clicked.connect(self.install_mod_from_url)
-        self.url_btn.setEnabled(False)
-        self.layout.addWidget(self.url_btn)
-
         self.progress_bar = QProgressBar()
         self.progress_bar.setValue(0)
         self.progress_bar.setVisible(False)
@@ -59,6 +50,14 @@ class DeadlockModInstaller(QWidget):
         self.link_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.layout.addWidget(self.link_label)
 
+        self.url_input = QLineEdit()
+        self.url_input.setPlaceholderText("Paste GameBanana URL here; Example 'https://gamebanana.com/mods/571935'")
+        self.layout.addWidget(self.url_input)
+
+        self.url_button = QPushButton("Install Mod from URL")
+        self.url_button.clicked.connect(self.install_mod_from_url)
+        self.layout.addWidget(self.url_button)
+
         self.setLayout(self.layout)
         self.game_path = ""
 
@@ -67,7 +66,6 @@ class DeadlockModInstaller(QWidget):
             self.game_path = auto_path
             self.label.setText(f"✅ Auto-detected game folder:\n{auto_path}")
             self.mod_btn.setEnabled(True)
-            self.url_btn.setEnabled(True)
             self.refresh_mod_list()
 
     def select_game_folder(self):
@@ -76,7 +74,6 @@ class DeadlockModInstaller(QWidget):
             self.game_path = folder
             self.label.setText(f"Selected folder: {folder}")
             self.mod_btn.setEnabled(True)
-            self.url_btn.setEnabled(True)
             self.refresh_mod_list()
 
     def confirm_overwrite(self, mod_name: str) -> bool:
@@ -117,26 +114,22 @@ class DeadlockModInstaller(QWidget):
 
     def install_mod_from_url(self):
         url = self.url_input.text().strip()
-        if not url:
-            QMessageBox.warning(self, "Warning", "Please enter a valid GameBanana mod URL.")
+        if not url or not self.game_path:
+            QMessageBox.warning(self, "Warning", "You must enter a URL and select a game folder.")
             return
 
         self.progress_bar.setVisible(True)
-        self.progress_bar.setValue(0)
+        self.progress_bar.setValue(20)
         self.label.setText("Downloading mod from URL...")
 
-        QTimer.singleShot(200, lambda: self.progress_bar.setValue(25))
-        QTimer.singleShot(400, lambda: self.progress_bar.setValue(50))
-        QTimer.singleShot(600, lambda: self.progress_bar.setValue(75))
-
         def finish_download():
-            zip_path = download_zip_from_gamebanana(url, "temp_mods")
+            zip_path = download_zip_from_gamebanana(url, os.path.join(self.game_path, "temp_mods"))
             if zip_path:
                 success, message = install_mod_zip(zip_path, self.game_path, self.confirm_overwrite)
                 self.progress_bar.setValue(100)
                 if success:
                     QMessageBox.information(self, "Success", message)
-                    self.label.setText("✅ Mod installed successfully from URL.")
+                    self.label.setText("✅ Mod installed successfully.")
                     self.refresh_mod_list()
                 else:
                     QMessageBox.critical(self, "Error", message)
@@ -145,7 +138,7 @@ class DeadlockModInstaller(QWidget):
                 QMessageBox.critical(self, "Error", "Failed to download mod from URL.")
             self.progress_bar.setVisible(False)
 
-        QTimer.singleShot(800, finish_download)
+        QTimer.singleShot(600, finish_download)
 
     def refresh_mod_list(self):
         self.mods_list.clear()
