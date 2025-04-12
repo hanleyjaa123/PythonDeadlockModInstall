@@ -20,6 +20,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="gamebanana_downloader.py" />
+    <Compile Include="GUI\installer_window.py" />
     <Compile Include="mod_installer.py" />
     <Compile Include="PythonDeadlockModInstall.build\scons-debug.py" />
     <Compile Include="PythonDeadlockModInstall.onefile-build\scons-debug.py" />
@@ -33,6 +34,7 @@
     <Content Include="PythonDeadlockModInstall.onefile-build\scons-report.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="GUI\" />
     <Folder Include="PythonDeadlockModInstall.build" />
     <Folder Include="PythonDeadlockModInstall.onefile-build" />
   </ItemGroup>
