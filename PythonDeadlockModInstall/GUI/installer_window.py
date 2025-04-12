@@ -7,8 +7,8 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt, QTimer
 
-from mod_installer import install_mod_zip, remove_mod, find_deadlock_install_path
-from gamebanana_downloader import download_zip_from_gamebanana
+from install_logic.mod_installer import install_mod_zip, remove_mod, find_deadlock_install_path
+from install_logic.gamebanana_downloader import download_zip_from_gamebanana
 
 
 class DeadlockModInstaller(QWidget):
@@ -40,7 +40,7 @@ class DeadlockModInstaller(QWidget):
         self.mods_list = QListWidget()
         self.layout.addWidget(self.mods_list)
 
-        self.link_label = QLabel("<a href='https://gamebanana.com/games/13937'>🔗 Find more mods here</a>")
+        self.link_label = QLabel("<a href='https://gamebanana.com/mods/cats/33295'>🔗 Find more mods here</a>")
         self.link_label.setOpenExternalLinks(True)
         self.link_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.layout.addWidget(self.link_label)
