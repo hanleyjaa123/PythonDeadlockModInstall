@@ -2,7 +2,7 @@
 import os
 from PyQt6.QtGui import QIcon
 from GUI import installer_window
-from mod_installer import find_deadlock_install_path
+from install_logic.mod_installer import find_deadlock_install_path
 from PyQt6.QtWidgets import QApplication
 
 
