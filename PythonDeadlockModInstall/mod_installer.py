@@ -6,6 +6,7 @@ import json
 import rarfile
 import py7zr
 
+#
 def extract_supported_archive(archive_path: str, extract_to: str) -> list[str]:
     """
     Extracts supported archive types: .zip, .rar, .7z
