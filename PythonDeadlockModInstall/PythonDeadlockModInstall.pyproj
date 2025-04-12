@@ -19,9 +19,9 @@
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="gamebanana_downloader.py" />
+    <Compile Include="install_logic\gamebanana_downloader.py" />
     <Compile Include="GUI\installer_window.py" />
-    <Compile Include="mod_installer.py" />
+    <Compile Include="install_logic\mod_installer.py" />
     <Compile Include="PythonDeadlockModInstall.build\scons-debug.py" />
     <Compile Include="PythonDeadlockModInstall.onefile-build\scons-debug.py" />
     <Compile Include="launcher.py" />
@@ -35,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="GUI\" />
+    <Folder Include="install_logic\" />
     <Folder Include="PythonDeadlockModInstall.build" />
     <Folder Include="PythonDeadlockModInstall.onefile-build" />
   </ItemGroup>
