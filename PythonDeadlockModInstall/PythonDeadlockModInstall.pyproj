@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{20def53b-9929-41fd-a5c0-2f06c789f838}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>PythonDeadlockModInstall.py</StartupFile>
+    <StartupFile>launcher.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -24,7 +24,7 @@
     <Compile Include="mod_installer.py" />
     <Compile Include="PythonDeadlockModInstall.build\scons-debug.py" />
     <Compile Include="PythonDeadlockModInstall.onefile-build\scons-debug.py" />
-    <Compile Include="PythonDeadlockModInstall.py" />
+    <Compile Include="launcher.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="PythonDeadlockModInstall.build\clcache-stats.29760.txt" />
