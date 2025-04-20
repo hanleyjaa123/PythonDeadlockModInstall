@@ -1,5 +1,6 @@
 ﻿import os
 import json
+from turtle import color
 from PyQt6.QtWidgets import (
     QWidget, QLabel, QPushButton,
     QVBoxLayout, QFileDialog, QMessageBox, QProgressBar,
@@ -16,6 +17,40 @@ class DeadlockModInstaller(QWidget):
         super().__init__()
         self.setWindowTitle("Deadlock Visual Mod Installer")
         self.setFixedSize(500, 540)
+
+        # Apply dark mode stylesheet by default
+        dark_mode_stylesheet = """
+            QWidget {
+                background-color: #2E2E2E;
+                color: #FFFFFF;
+            }
+            QPushButton {
+                background-color: #444444;
+                color: #FFFFFF;
+                border: 1px solid #555555;
+            }
+            QPushButton:hover {
+                background-color: #555555;
+            }
+            QLineEdit {
+                background-color: #3E3E3E;
+                color: #FFFFFF;
+                border: 1px solid #555555;
+            }
+            QListWidget {
+                background-color: #3E3E3E;
+                color: #FFFFFF;
+            }
+            QProgressBar {
+                background-color: #3E3E3E;
+                color: #FFFFFF;
+                border: 1px solid #555555;
+            }
+            QLabel {
+                color: #FFFFFF;
+            }
+        """
+        self.setStyleSheet(dark_mode_stylesheet)
 
         self.layout = QVBoxLayout()
 
@@ -40,7 +75,7 @@ class DeadlockModInstaller(QWidget):
         self.mods_list = QListWidget()
         self.layout.addWidget(self.mods_list)
 
-        self.link_label = QLabel("<a href='https://gamebanana.com/mods/cats/33295'>🔗 Find more mods here</a>")
+        self.link_label = QLabel("<a href='https://gamebanana.com/mods/33295' style='color: white;'>🔗 Find more mods here</a>")
         self.link_label.setOpenExternalLinks(True)
         self.link_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.layout.addWidget(self.link_label)
@@ -62,6 +97,10 @@ class DeadlockModInstaller(QWidget):
             self.label.setText(f"✅ Auto-detected game folder:\n{auto_path}")
             self.mod_btn.setEnabled(True)
             self.refresh_mod_list()
+
+    # Removed the toggle_dark_mode method and the dark_mode_btn
+
+
 
     def select_game_folder(self):
         folder = QFileDialog.getExistingDirectory(self, "Select Deadlock Install Folder")
