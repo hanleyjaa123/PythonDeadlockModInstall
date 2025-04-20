@@ -1,12 +1,8 @@
-﻿import json
-import sys
+﻿import sys
 import os
-import webbrowser
-from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtGui import QIcon, QCursor
+from PyQt6.QtGui import QIcon
 from GUI import installer_window
-from mod_installer import install_mod_zip, remove_mod, find_deadlock_install_path
-from gamebanana_downloader import download_zip_from_gamebanana
+from install_logic.mod_installer import find_deadlock_install_path
 from PyQt6.QtWidgets import QApplication
 
 
