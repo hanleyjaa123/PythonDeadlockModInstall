@@ -4,6 +4,8 @@
 
 A lightweight desktop tool for easily installing and managing visual mods for the game **Deadlock**.
 
+
+
 Built with Python and PyQt6, this app allows users to:
 
 - ✅ Automatically detect your Deadlock install folder  
@@ -14,6 +16,11 @@ Built with Python and PyQt6, this app allows users to:
 - 🧠 Detect and prompt before overwriting existing mods  
 - 🗂️ Track installed mods with `installed_mods.json`  
 
+---
+# Updates To Come
+
+- Overhaul of UI (Long Term)
+- Optimize certian tasks that are unoptimized
 ---
 
 ## 🚀 Features
