@@ -75,7 +75,7 @@ class DeadlockModInstaller(QWidget):
         self.mods_list = QListWidget()
         self.layout.addWidget(self.mods_list)
 
-        self.link_label = QLabel("<a href='https://gamebanana.com/mods/33295' style='color: white;'>🔗 Find more mods here</a>")
+        self.link_label = QLabel("<a href='https://gamebanana.com/mods/cats/33295' style='color: white;'>🔗 Find more mods here</a>")
         self.link_label.setOpenExternalLinks(True)
         self.link_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.layout.addWidget(self.link_label)
